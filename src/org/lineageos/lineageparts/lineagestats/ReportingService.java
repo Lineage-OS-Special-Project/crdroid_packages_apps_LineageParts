@@ -31,7 +31,7 @@ public class ReportingService extends IntentService {
 
         String deviceId = Utilities.getUniqueID(context);
         String deviceName = Utilities.getDevice();
-        String deviceCrVersion = Utilities.getModVersion();
+        String deviceLospVersion = Utilities.getModVersion();
         String deviceBuildDate = Utilities.getBuildDate();
         String deviceAndroidVersion = Utilities.getAndroidVersion();
         String deviceTag = Utilities.getTag();
@@ -39,38 +39,38 @@ public class ReportingService extends IntentService {
         String deviceCarrier = Utilities.getCarrier(context);
         String deviceCarrierId = Utilities.getCarrierId(context);
 
-        final int crdroidOldJobId = AnonymousStats.getLastJobId(context);
-        final int crdroidOrgJobId = AnonymousStats.getNextJobId(context);
+        final int lospOldJobId = AnonymousStats.getLastJobId(context);
+        final int lospJobId = AnonymousStats.getNextJobId(context);
 
-        if (DEBUG) Log.d(TAG, "scheduling job id: " + crdroidOrgJobId);
+        if (DEBUG) Log.d(TAG, "scheduling job id: " + lospJobId);
 
-        PersistableBundle crdroidBundle = new PersistableBundle();
-        crdroidBundle.putString(StatsUploadJobService.KEY_DEVICE_NAME, deviceName);
-        crdroidBundle.putString(StatsUploadJobService.KEY_UNIQUE_ID, deviceId);
-        crdroidBundle.putString(StatsUploadJobService.KEY_CR_VERSION, deviceCrVersion);
-        crdroidBundle.putString(StatsUploadJobService.KEY_BUILD_DATE, deviceBuildDate);
-        crdroidBundle.putString(StatsUploadJobService.KEY_ANDROID_VERSION, deviceAndroidVersion);
-        crdroidBundle.putString(StatsUploadJobService.KEY_TAG, deviceTag);
-        crdroidBundle.putString(StatsUploadJobService.KEY_COUNTRY, deviceCountry);
-        crdroidBundle.putString(StatsUploadJobService.KEY_CARRIER, deviceCarrier);
-        crdroidBundle.putString(StatsUploadJobService.KEY_CARRIER_ID, deviceCarrierId);
-        crdroidBundle.putLong(StatsUploadJobService.KEY_TIMESTAMP, System.currentTimeMillis());
+        PersistableBundle lospBundle = new PersistableBundle();
+        lospBundle.putString(StatsUploadJobService.KEY_DEVICE_NAME, deviceName);
+        lospBundle.putString(StatsUploadJobService.KEY_UNIQUE_ID, deviceId);
+        lospBundle.putString(StatsUploadJobService.KEY_CR_VERSION, deviceLospVersion);
+        lospBundle.putString(StatsUploadJobService.KEY_BUILD_DATE, deviceBuildDate);
+        lospBundle.putString(StatsUploadJobService.KEY_ANDROID_VERSION, deviceAndroidVersion);
+        lospBundle.putString(StatsUploadJobService.KEY_TAG, deviceTag);
+        lospBundle.putString(StatsUploadJobService.KEY_COUNTRY, deviceCountry);
+        lospBundle.putString(StatsUploadJobService.KEY_CARRIER, deviceCarrier);
+        lospBundle.putString(StatsUploadJobService.KEY_CARRIER_ID, deviceCarrierId);
+        lospBundle.putLong(StatsUploadJobService.KEY_TIMESTAMP, System.currentTimeMillis());
 
         // set job types
-        crdroidBundle.putInt(StatsUploadJobService.KEY_JOB_TYPE,
+        lospBundle.putInt(StatsUploadJobService.KEY_JOB_TYPE,
                 StatsUploadJobService.JOB_TYPE_CRDROID);
 
-        // schedule crdroid stats upload
-        js.schedule(new JobInfo.Builder(crdroidOrgJobId, new ComponentName(getPackageName(),
+        // schedule LOSP stats upload
+        js.schedule(new JobInfo.Builder(lospJobId, new ComponentName(getPackageName(),
                 StatsUploadJobService.class.getName()))
                 .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
                 .setMinimumLatency(1000)
-                .setExtras(crdroidBundle)
+                .setExtras(lospBundle)
                 .setPersisted(true)
                 .build());
 
         // cancel old job in case it didn't run yet
-        js.cancel(crdroidOldJobId);
+        js.cancel(lospOldJobId);
 
         // reschedule
         AnonymousStats.updateLastSynced(this);

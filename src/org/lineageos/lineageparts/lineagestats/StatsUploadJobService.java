@@ -104,7 +104,7 @@ public class StatsUploadJobService extends JobService {
 
                 String deviceId = extras.getString(KEY_UNIQUE_ID);
                 String deviceName = extras.getString(KEY_DEVICE_NAME);
-                String deviceCrVersion = extras.getString(KEY_CR_VERSION);
+                String deviceLospVersion = extras.getString(KEY_CR_VERSION);
                 String deviceBuildDate = extras.getString(KEY_BUILD_DATE);
                 String deviceAndroidVersion = extras.getString(KEY_ANDROID_VERSION);
                 String deviceTag = extras.getString(KEY_TAG);
@@ -119,7 +119,7 @@ public class StatsUploadJobService extends JobService {
                         case JOB_TYPE_CRDROID:
                             try {
                                 JSONObject json = buildStatsRequest(deviceId, deviceName,
-                                        deviceCrVersion, deviceBuildDate, deviceAndroidVersion,
+                                        deviceLospVersion, deviceBuildDate, deviceAndroidVersion,
                                         deviceTag, deviceCountry, deviceCarrier,
                                         deviceCarrierId);
                                 success = uploadToCrdroid(json);
@@ -148,14 +148,14 @@ public class StatsUploadJobService extends JobService {
         }
     }
 
-    private JSONObject buildStatsRequest(String deviceId, String deviceName, String deviceCrVersion,
+    private JSONObject buildStatsRequest(String deviceId, String deviceName, String deviceLospVersion,
                                          String deviceBuildDate, String deviceAndroidVersion, String deviceTag,
                                          String deviceCountry, String deviceCarrier,
                                          String deviceCarrierId) throws JSONException {
         JSONObject request = new JSONObject();
         request.put("device_hash", deviceId);
         request.put("device_name", deviceName);
-        request.put("device_crversion", deviceCrVersion);
+        request.put("device_crversion", deviceLospVersion);
         request.put("device_builddate", deviceBuildDate);
         request.put("device_androidversion", deviceAndroidVersion);
         request.put("device_tag", deviceTag);
@@ -181,7 +181,7 @@ public class StatsUploadJobService extends JobService {
             os.close();
 
             final int responseCode = urlConnection.getResponseCode();
-            if (DEBUG) Log.d(TAG, "crdroid server response code=" + responseCode);
+            if (DEBUG) Log.d(TAG, "LOSP server response code=" + responseCode);
             final boolean success = responseCode == HttpURLConnection.HTTP_OK;
             if (!success) {
                 Log.w(TAG, "failed sending, server returned: " + getResponse(urlConnection));
